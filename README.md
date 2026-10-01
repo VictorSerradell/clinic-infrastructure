@@ -1,1 +1,1 @@
-# clinic-hexagonal-platform
+# clinic-infrastructure

@@ -44,13 +44,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: VictorSerradell/Clinic-hexagonal-Spring-Quarkus-Oracle-PL-SQL-Kafka-outbox
-          path: Clinic-hexagonal-Spring-Quarkus-Oracle-PL-SQL-Kafka-outbox
+          path: ../Clinic-hexagonal-Spring-Quarkus-Oracle-PL-SQL-Kafka-outbox
 
       - name: Checkout Frontend Repo
         uses: actions/checkout@v4
         with:
           repository: VictorSerradell/clinic-frontend
-          path: clinic-frontend
+          path: ../clinic-frontend
 
       - name: Build and Validate Stack Containers
         run: |

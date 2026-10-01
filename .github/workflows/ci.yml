@@ -28,31 +28,35 @@ jobs:
           python3 -m json.tool debezium/register-oracle-connector.json > /dev/null
           echo "✅ Debezium connector JSON is valid."
 
-  # Job opcional: Valida que los servicios descargan e inician sin errores
   dry-run-launch:
     name: Test Compose Stack Launch
     needs: validate-compose
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      # 1. Clonar el repositorio orquestador dentro de su propia carpeta
+      - name: Checkout Infrastructure Repo
         uses: actions/checkout@v4
+        with:
+          path: clinic-infrastructure
 
-      # Como backend y frontend están en repositorios hermanos, los clonamos rápidamente
-      # para testear la construcción completa del docker-compose.yml
+      # 2. Clonar el Backend en la misma carpeta raíz
       - name: Checkout Backend Repo
         uses: actions/checkout@v4
         with:
           repository: VictorSerradell/Clinic-hexagonal-Spring-Quarkus-Oracle-PL-SQL-Kafka-outbox
-          path: ../Clinic-hexagonal-Spring-Quarkus-Oracle-PL-SQL-Kafka-outbox
+          path: Clinic-hexagonal-Spring-Quarkus-Oracle-PL-SQL-Kafka-outbox
 
+      # 3. Clonar el Frontend en la misma carpeta raíz
       - name: Checkout Frontend Repo
         uses: actions/checkout@v4
         with:
           repository: VictorSerradell/clinic-frontend
-          path: ../clinic-frontend
+          path: clinic-frontend
 
+      # 4. Ejecutar el build desde dentro de clinic-infrastructure
       - name: Build and Validate Stack Containers
+        working-directory: clinic-infrastructure
         run: |
           docker compose build
           echo "✅ All custom container images (backend & frontend) built successfully."

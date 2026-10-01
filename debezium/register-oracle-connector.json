@@ -1,0 +1,17 @@
+{
+  "name": "clinic-oracle-outbox-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.oracle.OracleConnector",
+    "tasks.max": "1",
+    "database.hostname": "oracle-db",
+    "database.port": "1521",
+    "database.user": "c##dbzuser",
+    "database.password": "dbz",
+    "database.dbname": "FREE",
+    "database.pdb.name": "FREEPDB1",
+    "database.out.server.name": "clinic_oracle",
+    "table.include.list": "SYSTEM.OUTBOX_EVENTS",
+    "tombstones.on.delete": "false",
+    "table.schema.default": "SYSTEM"
+  }
+}

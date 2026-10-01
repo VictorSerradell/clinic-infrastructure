@@ -1,0 +1,58 @@
+name: Infrastructure CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-compose:
+    name: Validate Docker Compose & Configs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate Docker Compose Syntax
+        run: |
+          docker compose config --quiet
+          echo "✅ docker-compose.yml syntax is valid."
+
+      - name: Validate JSON Files
+        run: |
+          python3 -m json.tool debezium/register-oracle-connector.json > /dev/null
+          echo "✅ Debezium connector JSON is valid."
+
+  # Job opcional: Valida que los servicios descargan e inician sin errores
+  dry-run-launch:
+    name: Test Compose Stack Launch
+    needs: validate-compose
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Como backend y frontend están en repositorios hermanos, los clonamos rápidamente
+      # para testear la construcción completa del docker-compose.yml
+      - name: Checkout Backend Repo
+        uses: actions/checkout@v4
+        with:
+          repository: VictorSerradell/Clinic-hexagonal-Spring-Quarkus-Oracle-PL-SQL-Kafka-outbox
+          path: Clinic-hexagonal-Spring-Quarkus-Oracle-PL-SQL-Kafka-outbox
+
+      - name: Checkout Frontend Repo
+        uses: actions/checkout@v4
+        with:
+          repository: VictorSerradell/clinic-frontend
+          path: clinic-frontend
+
+      - name: Build and Validate Stack Containers
+        run: |
+          docker compose build
+          echo "✅ All custom container images (backend & frontend) built successfully."
